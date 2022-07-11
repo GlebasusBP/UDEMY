@@ -121,6 +121,7 @@ window.addEventListener("DOMContentLoaded", () => {
   function openModal(){
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden';
+    clearTimeout(openModalByTimer); // если модалка была открыта до таймера, то setTimeout сбрасывается
   }
 
   function closeModal(){
@@ -153,4 +154,19 @@ window.addEventListener("DOMContentLoaded", () => {
     closeModal();
   }
  });
+
+ // mod Modal
+
+ const openModalByTimer = setTimeout(openModal, 5000);
+
+ function showModalByScroll (){
+  if(window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1){
+    openModal();
+    window.removeEventListener('scroll', showModalByScroll);
+   }
+ }
+
+ window.addEventListener('scroll', showModalByScroll);
+ 
+
 });
