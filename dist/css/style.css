@@ -642,3 +642,10 @@ a {
   from{opacity: 0.1;}
   to{opacity: 1;}
 }
+
+.show__status {
+  display: block;
+  margin: 0, auto;
+  padding: 20px;
+  font-size: 20px;
+}

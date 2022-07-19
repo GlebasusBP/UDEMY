@@ -46,7 +46,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //TIMER
 
-  const deadLine = '2022-07-15';
+  const deadLine = '2022-07-20';
 
   function getTimeRemaining(endTime){
     let days, hours, minutes, seconds;
@@ -113,7 +113,6 @@ window.addEventListener("DOMContentLoaded", () => {
   // MODAL
 
   const modalBtnOpen = document.querySelectorAll('[data-modal]'),
-        modalBtnClose = document.querySelector('[data-closeModal]'),
         modal = document.querySelector(".modal");
 
   console.log(modalBtnOpen);
@@ -136,15 +135,9 @@ window.addEventListener("DOMContentLoaded", () => {
       } 
     });
   });
-
- modalBtnClose.addEventListener('click', () => {
-  if(modal.style.display == "block"){
-    closeModal();
-  }
- })
   
   modal.addEventListener('click', (e) => {
-    if(e.target === modal){
+    if(e.target === modal || e.target.getAttribute('data-closeModal') == ''){
       closeModal();
     }
   })
@@ -157,7 +150,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
  // mod Modal
 
- const openModalByTimer = setTimeout(openModal, 5000);
+ const openModalByTimer = setTimeout(openModal, 50000);
 
  function showModalByScroll (){
   if(window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1){
@@ -171,12 +164,13 @@ window.addEventListener("DOMContentLoaded", () => {
  // classes
 
   class MenuCard {
-    constructor(src, alt, title, description, price, parentSelector){
+    constructor(src, alt, title, description, price, parentSelector, ...classes){
       this.src = src;
       this.alt = alt;
       this.title = title;
       this.description = description;
       this.price = price;
+      this.classes  = classes;
       this.parentMenu = document.querySelector(parentSelector);
       this.exchange = 30;
       this.changePriceToUAH();
@@ -189,8 +183,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
     renderCard(){
       const element = document.createElement('div');
+      if(this.classes.length === 0){
+        element.classList.add("menu__item");
+      }else{
+        this.classes.forEach(className => {element.classList.add(className)});
+      }
+
       element.innerHTML = `
-        <div class="menu__item">
           <img src=${this.src} alt=${this.alt}>
           <h3 class="menu__item-subtitle">${this.title}</h3>
           <div class="menu__item-descr">${this.description}</div>
@@ -199,7 +198,6 @@ window.addEventListener("DOMContentLoaded", () => {
               <div class="menu__item-cost">Цена:</div>
               <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
           </div>
-        </div>
         `;
       
       this.parentMenu.append(element);  
@@ -233,4 +231,85 @@ window.addEventListener("DOMContentLoaded", () => {
     ".menu .container"
   ).renderCard();
 
+  // POST to SERV.
+
+  const forms = document.querySelectorAll("form");
+
+  const message = {
+    loading: "img/svg/spinner.svg",
+    saccess: "Отправлено",
+    failure: "произошла ошибка"
+  }
+
+  forms.forEach( item => {
+    postData(item);
+  })
+
+  function postData(form){
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();  //сброс стандартного поведения браузера
+
+      const statusMessage = document.createElement("img");
+      statusMessage.src = message.loading;
+      statusMessage.style.cssText = `
+        display: block;
+        margin: 0 auto;
+      `;
+      form.insertAdjacentElement('afterend', statusMessage);
+      // FormData
+      const formData = new FormData(form);
+
+      // чтобы прогнать FormData() в формат JSON нужна следующая конструкция:
+
+      const object = {};
+      formData.forEach(function(value, key){
+        object[key] = value;
+      });
+
+      fetch('server.php', {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(object)
+      }).then( data => data.text())
+        .then( data => {
+          console.log(data);
+          showModalForm(message.saccess);          
+          statusMessage.remove();
+        })
+        .catch( () => {
+          showModalForm(message.failure);
+        })
+        .finally(() => {
+          form.reset();
+        })
+    })
+  }
+
+  function showModalForm(message){
+    const modalDialog = document.querySelector('.modal__dialog');
+    modalDialog.classList.add('hide');
+
+    openModal();
+
+    const thanksModal = document.createElement('div');
+    thanksModal.classList.add('modal__dialog');
+    thanksModal.innerHTML = `
+      <div class="modal__content">
+        <div data-closeModal class="modal__close">&times;</div>
+        <div class="modal__title">${message}</div>
+      </div>
+    `;
+    document.querySelector('.modal').append(thanksModal);
+
+    setTimeout( () => {
+      thanksModal.remove(); // чтобы не накапливались лишние блоки.
+      modalDialog.classList.remove('hide');
+      modalDialog.classList.add('modal__dialog');
+      closeModal();
+    }, 3000);
+  }
+
 });
+
