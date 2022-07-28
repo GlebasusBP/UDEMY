@@ -164,49 +164,124 @@
 
 // console.log( unique(values) );
 
-function unique(arr) {
-  return Array.from(new Set(arr));
-}
+// function unique(arr) {
+//   return Array.from(new Set(arr));
+// }
 
-let values = ["Hare", "Krishna", "Hare", "Krishna",
-  "Krishna", "Krishna", "Hare", "Hare", ":-O"
-];
+// let values = ["Hare", "Krishna", "Hare", "Krishna",
+//   "Krishna", "Krishna", "Hare", "Hare", ":-O"
+// ];
 
-console.log( unique(values) );
-////////////////////////////////////////////////////////////////////////////////////////
+// console.log( unique(values) );
+// ////////////////////////////////////////////////////////////////////////////////////////
 
-let arr = ["nap", "teachers", "cheaters", "PAN", "ear", "era", "hectares"];
+// let arr = ["nap", "teachers", "cheaters", "PAN", "ear", "era", "hectares"];
 
-function clearArr(arr){
+// function clearArr(arr){
   // let sortArr = arr.map((e)=>{
   //   console.log(e.split("").sort().join(""));
   // })
 
-  let map = new Map();
+//   let map = new Map();
 
-  for (let word of arr){
-    let sorted = word.toLowerCase().split("").sort().join("");
-    map.set(sorted, word);
-  }
-  console.log(map);
-  return Array.from(map.values());
-}
+//   for (let word of arr){
+//     let sorted = word.toLowerCase().split("").sort().join("");
+//     map.set(sorted, word);
+//   }
+//   console.log(map);
+//   return Array.from(map.values());
+// }
 
-console.log(clearArr(arr));
-
-
+// console.log(clearArr(arr));
 
 
-let map = new Map();
-
-map.set("name", "John");
-
-let keys = Array.from(map.keys());
 
 
-// Error: keys.push is not a function
-// Ошибка: keys.push -- это не функция
-keys.push("more");
+// let map = new Map();
 
-console.log(keys);
+// map.set("name", "John");
 
+// let keys = Array.from(map.keys());
+
+
+// // Error: keys.push is not a function
+// // Ошибка: keys.push -- это не функция
+// keys.push("more");
+
+// console.log(keys);
+
+// function arrowArea(a,b) {
+//   // your code
+//   return (b/2 * a)/2;
+// }
+
+// console.log(arrowArea(4, 2));
+
+// function XO(str) {
+//   //code here
+//   let x = 0;
+//   let o = 0;
+//   const arr = str.toLowerCase().split('');
+//   arr.forEach((e) => {  
+//     if(e === 'x'){
+//       x++;
+//     }else if(e === 'o'){
+//       o++;
+//     }
+//   })
+//  return x === 0 ? true : false;
+// }
+
+// console.log(XO('oooXxxXXxXX'));
+
+// function smallEnough(a, limit){
+//   let res = '';
+//   a.forEach(e => {
+//     if(e > limit){
+//       res = true;
+//     } else {
+//       res = false;
+//     }
+//   });
+//   return res;
+// }
+
+// console.log(smallEnough([101, 45, 75, 105, 99, 107], 107))
+
+// function accum(s) {
+// 	// your code
+//   const arr = Array.from(s);
+//   const newArr = arr.map((e, i) => {
+//     let res = [e.toUpperCase()]; 
+//     for(let j = 0; j < i; j++){
+//       res.push(e.toLowerCase());
+//     } 
+//     return res;
+//   })
+//   let getArr = newArr.map(e => {
+//     return e.join('');
+//   });
+//   return getArr.join('-');
+//   //return s.split('').map((c, i) => (c.toUpperCase() + c.toLowerCase().repeat(i))).join('-');
+// }
+
+// console.log(accum("ZpglnRxqenU"));
+
+
+
+// function showBits (n) {
+//   const bitNum = (n >>> 0).toString(2).split('');
+//   const num = bitNum.length;
+//   let arr = bitNum.slice();
+  
+//     for(let i = 0; i < 32 - num; i++){
+//       arr.unshift(0);
+//     }
+//   return arr.map(e => Number(e));
+// }
+
+// const showBits = $ => [...($ >>> 0).toString(2).padStart(32, 0)].map(Number)
+
+// console.log(showBits(-1));
+
+((m * (m + 1)) / 2) * ((n * (n + 1)) / 2)
