@@ -284,4 +284,32 @@
 
 // console.log(showBits(-1));
 
-((m * (m + 1)) / 2) * ((n * (n + 1)) / 2)
+// ((m * (m + 1)) / 2) * ((n * (n + 1)) / 2)
+
+
+// function getMiddle(s){
+//   //Code goes here!
+//   if(s.length %2 === 0){
+//     return `${s[(s.length / 2) - 1]}${s[(s.length / 2)]}`;
+//   } else {
+//     return `${s[Math.floor(s.length / 2)]}`;
+//   }
+// }
+
+// console.log(getMiddle('middl'));
+
+
+function removeRotten(bagOfFruits){
+  // ...
+  const arr = bagOfFruits.map( elem => {
+    if(elem.indexOf('rotten') >= 0){
+      return elem.slice(6).toLowerCase();
+    } else {
+      return elem;
+    }
+  });
+  return arr;
+  // return arr ? arr.map(x=>x.replace('rotten', '').toLowerCase()) : [] ;
+}
+
+console.log(removeRotten(["apple","banana","kiwi","rottenMelone","orange"]));

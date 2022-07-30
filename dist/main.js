@@ -312,11 +312,56 @@ window.addEventListener("DOMContentLoaded", () => {
         currentCount = slider.querySelector('#current'),
         totalCount = slider.querySelector('#total'),
         prev = slider.querySelector('.offer__slider-prev'),
-        next = slider.querySelector('.offer__slider-next');
+        next = slider.querySelector('.offer__slider-next'),
+        wrapper = slider.querySelector('.offer__slider-wrapper'),
+        inner = slider.querySelector('.offer__slider-inner'),
+        width = window.getComputedStyle(wrapper).width;
 
   let indexSlide = 1;
+  let offset = 0;
+  
+  inner.style.width = 100 * slidesList.length + '%';
+  inner.style.display = 'flex';
+  inner.style.transition = '0.5s all';
+  wrapper.style.overflow = 'hidden';
 
-  // simple
+  slidesList.forEach( e => {
+    e.style.width = width;
+  });
+
+  next.addEventListener('click', () => {
+    if(offset === +width.slice(0, width.length - 2) * (slidesList.length - 1)){
+      offset = 0;
+    } else {
+      offset += +width.slice(0, width.length - 2);
+    }
+
+    inner.style.transform = `translateX(-${offset}px)`;
+    if(indexSlide === slidesList.length){
+      indexSlide = 1;
+    }else{
+      indexSlide++;
+    }
+    
+    statusCount();
+  });
+
+  prev.addEventListener('click', () => {
+    if(offset === 0){
+      offset = +width.slice(0, width.length - 2) * (slidesList.length - 1);
+    } else {
+      offset -= +width.slice(0, width.length - 2);
+    }
+
+    inner.style.transform = `translateX(-${offset}px)`;
+    if(indexSlide === 1){
+      indexSlide = slidesList.length;
+    }else{
+      indexSlide--;
+    }
+
+    statusCount();
+  });
 
   function getTotalSliders(){
     if(slidesList.length < 10){
@@ -326,53 +371,74 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
- function statusCount(){
-  if(slidesList.length < 10){
-    currentCount.textContent = `0${indexSlide}`;
-  } else {
-    currentCount.textContent = indexSlide;
-  }
- }
-
-  function showSlide(n){
-    if(n > slidesList.length){
-      indexSlide = 1;
+  function statusCount(){
+    if(slidesList.length < 10){
+      currentCount.textContent = `0${indexSlide}`;
+    } else {
+      currentCount.textContent = indexSlide;
     }
-
-    if(n < 1){
-      indexSlide = slidesList.length;
-    }
-
-    slidesList.forEach(e => {
-      e.classList.add('hide')
-      e.classList.remove('fade')
-    });
-
-    slidesList[indexSlide - 1].classList.remove('hide');
-    slidesList[indexSlide - 1].classList.add('fade');
   }
 
-  showSlide(indexSlide);
-  statusCount();
   getTotalSliders();
+  statusCount();
 
-  prev.addEventListener('click', () => {
-    indexSlide--;
-    showSlide(indexSlide);
-    statusCount();
-  });
+  // simple
 
-  next.addEventListener('click', () => {
-    indexSlide++;
-    showSlide(indexSlide);
-    statusCount();
-  });
+//   function getTotalSliders(){
+//     if(slidesList.length < 10){
+//       totalCount.textContent = `0${slidesList.length}`;
+//     } else {
+//       totalCount.textContent = slidesList.length;
+//     }
+//   }
+
+//  function statusCount(){
+//   if(slidesList.length < 10){
+//     currentCount.textContent = `0${indexSlide}`;
+//   } else {
+//     currentCount.textContent = indexSlide;
+//   }
+//  }
+
+//   function showSlide(n){
+//     if(n > slidesList.length){
+//       indexSlide = 1;
+//     }
+
+//     if(n < 1){
+//       indexSlide = slidesList.length;
+//     }
+
+//     slidesList.forEach(e => {
+//       e.classList.add('hide')
+//       e.classList.remove('fade')
+//     });
+
+//     slidesList[indexSlide - 1].classList.remove('hide');
+//     slidesList[indexSlide - 1].classList.add('fade');
+//   }
+
+//   showSlide(indexSlide);
+//   statusCount();
+//   getTotalSliders();
+
+//   prev.addEventListener('click', () => {
+//     indexSlide--;
+//     showSlide(indexSlide);
+//     statusCount();
+//   });
+
+//   next.addEventListener('click', () => {
+//     indexSlide++;
+//     showSlide(indexSlide);
+//     statusCount();
+//   });
 
  ///////////////////////////////////////////////////
  
  //carousel slider
 
- 
+
 
 });
 
