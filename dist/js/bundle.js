@@ -1,168 +1,132 @@
-"use strict";
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
 
-window.addEventListener("DOMContentLoaded", () => {
-// TABS
-  const tabContent = document.querySelectorAll(".tabcontent"),
-        parentTabs = document.querySelector(".tabheader__items"),
-        tabs = document.querySelectorAll(".tabheader__item");
+/***/ "./js/modules/calc.js":
+/*!****************************!*\
+  !*** ./js/modules/calc.js ***!
+  \****************************/
+/***/ ((module) => {
 
-  function hideTabContent(){
-    tabContent.forEach((e) => {
-      e.classList.add("hide");
-      e.classList.remove("show", "fade");
+function calc(){
+  const result = document.querySelector('.calculating__result span');
+  
+  let sex, height, weight, age, ratio;
+
+  if(localStorage.getItem('ratio')){
+    ratio = localStorage.getItem('ratio');
+  } else {
+    ratio = 1.375;
+    localStorage.setItem('ratio', 1.375);
+  }
+
+  if(localStorage.getItem('sex')){
+    sex = localStorage.getItem('sex');
+  } else {
+    sex = 'female';
+    localStorage.setItem('sex', 'female');
+  }
+
+  function initLocalSettings(selecrot, activeClass){
+    const elements = document.querySelectorAll(selecrot);
+
+    elements.forEach( e => {
+      e.classList.remove(activeClass);
+
+      if(localStorage.getItem('sex') === e.getAttribute('id')){
+        e.classList.add(activeClass);
+      }
+      if(localStorage.getItem('ratio') === e.getAttribute('data-ratio')){
+        e.classList.add(activeClass);
+      }
     });
+  }
 
-    tabs.forEach(elem => {
-      elem.classList.remove("tabheader__item_active")
+  initLocalSettings('#gender div', 'calculating__choose-item_active');
+  initLocalSettings('.calculating__choose_big div', 'calculating__choose-item_active');
+
+  function calcTotal(){
+    if(!sex || !height || !weight || !age || !ratio){
+      result.textContent= `***`;
+      return;
+    } else if(sex == 'female'){
+      result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+    } else {
+      result.textContent = Math.round((88.6 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+    }
+  } 
+  
+  calcTotal();
+
+  function getStaticInformation(parentSelector, activeClass){
+    const elements = document.querySelectorAll(`${parentSelector} div`);
+
+    elements.forEach( elem => {
+      elem.addEventListener('click', (e) => {
+        if(e.target.getAttribute('data-ratio')){
+          ratio = +e.target.getAttribute('data-ratio');
+          localStorage.setItem('ratio', +e.target.getAttribute('data-ratio'));
+        }else{
+          sex = e.target.getAttribute('id');
+          localStorage.setItem('sex', e.target.getAttribute('id'));
+        }
+
+
+        elements.forEach( e => {
+          e.classList.remove(activeClass);
+        })
+        e.target.classList.add(activeClass);
+        calcTotal();
+      })
+    })
+      
+    }
+
+  getStaticInformation('#gender', 'calculating__choose-item_active');
+  getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active');
+
+
+  function getDynamicInformation(selector){
+    const input = document.querySelector(selector);
+
+    input.addEventListener('input', () => {
+   
+    if(input.value.match(/\D/g)){
+      input.style.border = '3px solid red';
+    } else {
+      input.style.border = 'none';
+    }
+
+      switch(input.getAttribute('id')) {
+        case 'height':
+          height = +input.value;
+          break;
+        case 'weight':
+          weight = +input.value;
+          break;
+        case 'age':
+          age = +input.value;
+          break;
+      }
+      calcTotal();
     })
   }
 
-  function showTabContent(item = 0){
-    tabContent[item].classList.remove("hide");
-    tabContent[item].classList.add("show", "fade");
-    tabs[item].classList.add("tabheader__item_active")
-  }
+  getDynamicInformation('#height');
+  getDynamicInformation('#weight');
+  getDynamicInformation('#age');
+}
 
-  hideTabContent();
-  showTabContent();
+module.exports = calc;
 
-  parentTabs.addEventListener("click", (event) => {
-    const target = event.target;
+/***/ }),
 
-    if(target && target.classList.contains("tabheader__item")){
-      tabs.forEach( (elem, i) => {
-        if(target == elem){
-          hideTabContent();
-          showTabContent(i);
-        }
-      })
-    }
-  })
+/***/ "./js/modules/cards.js":
+/*!*****************************!*\
+  !*** ./js/modules/cards.js ***!
+  \*****************************/
+/***/ ((module) => {
 
-  // при клике на какой либо элемент родителя работает колбэк, в котором, если клик произошол по элементу с классом в условии,
-  // то запускется перебор элементов и сравнение их с элементом, по которому произошол клик. При true вызываются функции и 
-  // передаётся индекс элемента, который нужно показать на стр.
-
-
-  //TIMER
-
-  const deadLine = '2022-07-20';
-
-  function getTimeRemaining(endTime){
-    let days, hours, minutes, seconds;
-    const t = Date.parse(endTime) - Date.parse(new Date());   
-
-    if(t <= 0){
-      days = 0;
-      hours = 0;
-      minutes = 0;
-      seconds = 0;
-    } else {
-      days = Math.floor(t / (1000 * 60 * 60 * 24));
-      hours = Math.floor((t / (1000 * 60 * 60) % 24));
-      minutes = Math.floor((t / (1000 * 60) % 60));
-      seconds = Math.floor((t / 1000) % 60);
-    }
-    
-    return {
-      total: t,
-      days: days,
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds
-    }
-  }
-  
-  console.log(getTimeRemaining(deadLine));
-  
-
-  function setClock(selector, endTime){
-    const timer = document.querySelector(selector),
-          days = timer.querySelector("#days"),
-          hours = timer.querySelector("#hours"),
-          minutes = timer.querySelector("#minutes"),
-          seconds = timer.querySelector("#seconds"),
-          updateInterval = setInterval(updateTimer, 1000);
-
-    updateTimer();      
-
-    function updateTimer(){
-      const time = getTimeRemaining(endTime);
-
-      function setZero(num){
-        if(num < 10){
-          return `0${num}`;
-        } else {
-          return num;
-        }
-      }
-
-      days.innerHTML = setZero(time.days);
-      hours.innerHTML = setZero(time.hours);
-      minutes.innerHTML = setZero(time.minutes);
-      seconds.innerHTML = setZero(time.seconds);
-
-      if(time.total <= 0){
-        clearInterval(updateInterval);
-      }
-    }   
-  }
-
-  setClock(".timer", deadLine);
-
-  // MODAL
-
-  const modalBtnOpen = document.querySelectorAll('[data-modal]'),
-        modal = document.querySelector(".modal");
-
-  console.log(modalBtnOpen);
-
-  function openModal(){
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-    clearTimeout(openModalByTimer); // если модалка была открыта до таймера, то setTimeout сбрасывается
-  }
-
-  function closeModal(){
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-
-  modalBtnOpen.forEach(elem => {
-    elem.addEventListener('click', () => {
-      if(modal.style.display != 'block'){
-        openModal();
-      } 
-    });
-  });
-  
-  modal.addEventListener('click', (e) => {
-    if(e.target === modal || e.target.getAttribute('data-closeModal') == ''){
-      closeModal();
-    }
-  })
-
- document.addEventListener('keydown', (e) => {
-  if(e.code === "Escape" && modal.style.display == "block"){
-    closeModal();
-  }
- });
-
- // mod Modal
-
- const openModalByTimer = setTimeout(openModal, 50000);
-
- function showModalByScroll (){
-  if(window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1){
-    openModal();
-    window.removeEventListener('scroll', showModalByScroll);
-   }
- }
-
- window.addEventListener('scroll', showModalByScroll);
- 
- // classes
-
+function cards(){
   class MenuCard {
     constructor(src, alt, title, description, price, parentSelector, ...classes){
       this.src = src;
@@ -220,11 +184,81 @@ window.addEventListener("DOMContentLoaded", () => {
         new MenuCard(img, altimg, title, descr, price, '.menu .container').renderCard();
       } )
     });
+}
 
-  
+module.exports = cards;
 
-  // POST to SERV.
+/***/ }),
 
+/***/ "./js/modules/modal.js":
+/*!*****************************!*\
+  !*** ./js/modules/modal.js ***!
+  \*****************************/
+/***/ ((module) => {
+
+function modal(){
+  const modalBtnOpen = document.querySelectorAll('[data-modal]'),
+        modal = document.querySelector(".modal");
+
+  console.log(modalBtnOpen);
+
+  function openModal(){
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    clearTimeout(openModalByTimer); // если модалка была открыта до таймера, то setTimeout сбрасывается
+  }
+
+  function closeModal(){
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  modalBtnOpen.forEach(elem => {
+    elem.addEventListener('click', () => {
+      if(modal.style.display != 'block'){
+        openModal();
+      } 
+    });
+  });
+
+  modal.addEventListener('click', (e) => {
+    if(e.target === modal || e.target.getAttribute('data-closeModal') == ''){
+      closeModal();
+   }
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if(e.code === "Escape" && modal.style.display == "block"){
+      closeModal();
+    }
+  });
+
+  // mod Modal
+
+  const openModalByTimer = setTimeout(openModal, 50000);
+
+  function showModalByScroll (){
+    if(window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1){
+      openModal();
+      window.removeEventListener('scroll', showModalByScroll);
+    }
+  }
+
+  window.addEventListener('scroll', showModalByScroll);
+
+}
+
+module.exports = modal;
+
+/***/ }),
+
+/***/ "./js/modules/post-to-server.js":
+/*!**************************************!*\
+  !*** ./js/modules/post-to-server.js ***!
+  \**************************************/
+/***/ ((module) => {
+
+function postToServer(){
   const forms = document.querySelectorAll("form");
 
   const messages = {
@@ -304,9 +338,19 @@ window.addEventListener("DOMContentLoaded", () => {
       closeModal();
     }, 3000);
   }
+}
 
-  // Slider
+module.exports = postToServer;
 
+/***/ }),
+
+/***/ "./js/modules/slider.js":
+/*!******************************!*\
+  !*** ./js/modules/slider.js ***!
+  \******************************/
+/***/ ((module) => {
+
+function slider(){
   const slider = document.querySelector('.offer__slider'),
         slidesList = slider.querySelectorAll('.offer__slide'),
         currentCount = slider.querySelector('#current'),
@@ -579,75 +623,197 @@ window.addEventListener("DOMContentLoaded", () => {
 //       activeDot();
 //     })
 //   })
- ///////////////////////////////////////////////////
- 
-  // Calc
-  const result = document.querySelector('.calculating__result span');
-  
-  let sex = 'female',
-      height, weight, age,
-      ratio = 1.375;
+}
 
-  function calcTotal(){
-    if(!sex || !height || !weight || !age || !ratio){
-      result.textContent= `***`;
-      return;
-    } else if(sex == 'female'){
-      result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
-    } else {
-      result.textContent = Math.round((88.6 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
-    }
-  } 
-  
-  calcTotal();
+module.exports = slider;
 
-  function getStaticInformation(parentSelector, activeClass){
-    const elements = document.querySelectorAll(`${parentSelector} div`);
+/***/ }),
 
-    elements.forEach( elem => {
-      elem.addEventListener('click', (e) => {
-        if(e.target.getAttribute('data-ratio')){
-          ratio = +e.target.getAttribute('data-ratio');
-        }else{
-          sex = e.target.getAttribute('id');
-        }
+/***/ "./js/modules/tabs.js":
+/*!****************************!*\
+  !*** ./js/modules/tabs.js ***!
+  \****************************/
+/***/ ((module) => {
 
+function tabs(){
+  const tabContent = document.querySelectorAll(".tabcontent"),
+        parentTabs = document.querySelector(".tabheader__items"),
+        tabs = document.querySelectorAll(".tabheader__item");
 
-        elements.forEach( e => {
-          e.classList.remove(activeClass);
-        })
-        e.target.classList.add(activeClass);
-        calcTotal();
-      })
-    })
-      
-    }
+  function hideTabContent(){
+    tabContent.forEach((e) => {
+      e.classList.add("hide");
+      e.classList.remove("show", "fade");
+    });
 
-  getStaticInformation('#gender', 'calculating__choose-item_active');
-  getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active');
-
-
-  function getDynamicInformation(selector){
-    const input = document.querySelector(selector);
-
-    input.addEventListener('input', () => {
-      switch(input.getAttribute('id')) {
-        case 'height':
-          height = +input.value;
-          break;
-        case 'weight':
-          weight = +input.value;
-          break;
-        case 'age':
-          age = +input.value;
-          break;
-      }
-      calcTotal();
+    tabs.forEach(elem => {
+      elem.classList.remove("tabheader__item_active")
     })
   }
 
-  getDynamicInformation('#height');
-  getDynamicInformation('#weight');
-  getDynamicInformation('#age');
-});
+  function showTabContent(item = 0){
+    tabContent[item].classList.remove("hide");
+    tabContent[item].classList.add("show", "fade");
+    tabs[item].classList.add("tabheader__item_active")
+  }
 
+  hideTabContent();
+  showTabContent();
+
+  parentTabs.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if(target && target.classList.contains("tabheader__item")){
+      tabs.forEach( (elem, i) => {
+        if(target == elem){
+          hideTabContent();
+          showTabContent(i);
+        }
+      })
+    }
+  })
+
+  // при клике на какой либо элемент родителя работает колбэк, в котором, если клик произошол по элементу с классом в условии,
+  // то запускется перебор элементов и сравнение их с элементом, по которому произошол клик. При true вызываются функции и 
+  // передаётся индекс элемента, который нужно показать на стр.
+
+}
+
+module.exports = tabs;
+
+/***/ }),
+
+/***/ "./js/modules/timer.js":
+/*!*****************************!*\
+  !*** ./js/modules/timer.js ***!
+  \*****************************/
+/***/ ((module) => {
+
+function timer(){
+  const deadLine = '2022-07-20';
+
+  function getTimeRemaining(endTime){
+    let days, hours, minutes, seconds;
+    const t = Date.parse(endTime) - Date.parse(new Date());   
+
+    if(t <= 0){
+      days = 0;
+      hours = 0;
+      minutes = 0;
+      seconds = 0;
+    } else {
+      days = Math.floor(t / (1000 * 60 * 60 * 24));
+      hours = Math.floor((t / (1000 * 60 * 60) % 24));
+      minutes = Math.floor((t / (1000 * 60) % 60));
+      seconds = Math.floor((t / 1000) % 60);
+    }
+    
+    return {
+      total: t,
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds
+    }
+  }
+  
+  console.log(getTimeRemaining(deadLine));
+  
+
+  function setClock(selector, endTime){
+    const timer = document.querySelector(selector),
+          days = timer.querySelector("#days"),
+          hours = timer.querySelector("#hours"),
+          minutes = timer.querySelector("#minutes"),
+          seconds = timer.querySelector("#seconds"),
+          updateInterval = setInterval(updateTimer, 1000);
+
+    updateTimer();      
+
+    function updateTimer(){
+      const time = getTimeRemaining(endTime);
+
+      function setZero(num){
+        if(num < 10){
+          return `0${num}`;
+        } else {
+          return num;
+        }
+      }
+
+      days.innerHTML = setZero(time.days);
+      hours.innerHTML = setZero(time.hours);
+      minutes.innerHTML = setZero(time.minutes);
+      seconds.innerHTML = setZero(time.seconds);
+
+      if(time.total <= 0){
+        clearInterval(updateInterval);
+      }
+    }   
+  }
+
+  setClock(".timer", deadLine);
+}
+
+module.exports = timer;
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+/*!**********************!*\
+  !*** ./js/script.js ***!
+  \**********************/
+
+
+window.addEventListener('DOMContentLoaded', () => {
+  const tabs = __webpack_require__(/*! ./modules/tabs */ "./js/modules/tabs.js"),
+        timer = __webpack_require__(/*! ./modules/timer */ "./js/modules/timer.js"),
+        modal = __webpack_require__(/*! ./modules/modal */ "./js/modules/modal.js"),
+        postToServer = __webpack_require__(/*! ./modules/post-to-server */ "./js/modules/post-to-server.js"),
+        cards = __webpack_require__(/*! ./modules/cards */ "./js/modules/cards.js"),
+        slider = __webpack_require__(/*! ./modules/slider */ "./js/modules/slider.js"),
+        calc = __webpack_require__(/*! ./modules/calc */ "./js/modules/calc.js");
+
+  tabs();
+  timer();
+  modal();
+  postToServer();
+  calc();
+  cards();
+  slider();
+});
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=bundle.js.map
